@@ -76,3 +76,13 @@ target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     ${CMAKE_SOURCE_DIR}/../modules/max31865
 )
 target_link_options(${CMAKE_PROJECT_NAME} PRIVATE -u _printf_float)
+
+target_sources(${CMAKE_PROJECT_NAME} PRIVATE
+    # Add user sources here
+    ${CMAKE_SOURCE_DIR}/../modules/uart/uart.c
+)
+
+target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
+    # Add user defined include paths
+    ${CMAKE_SOURCE_DIR}/../modules/uart
+)
