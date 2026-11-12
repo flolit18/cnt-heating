@@ -1,0 +1,11 @@
+{
+    "configurations": [
+        {
+            "name": "STM32",
+            "compileCommands": "${workspaceFolder}/../film_heating/build/Debug/compile_commands.json",
+            "intelliSenseMode": "linux-gcc-x64",
+            "cStandard": "gnu17"
+        }
+    ],
+    "version": 4
+}
