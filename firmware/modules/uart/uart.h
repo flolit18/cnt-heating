@@ -15,10 +15,10 @@
 bool print_uart(UART_HandleTypeDef *uart, const char *msg);
 
 // forme a message to parse to print_uart (int 16 bit)
-void print_uint(uint16_t num);
+void print_uint(UART_HandleTypeDef *uart, uint16_t num);
 
 // forme a message to parse to print_uart (float)
-void print_float(float num);
+void print_float(UART_HandleTypeDef *uart, float num);
 
 
 
