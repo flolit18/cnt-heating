@@ -66,23 +66,19 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
 
     # Add user defined libraries
 )
+set(MODULES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../modules)
+
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
-    # Add user sources here
-    ${CMAKE_SOURCE_DIR}/../modules/max31865/max31865.c
+    ${MODULES_DIR}/max31865/max31865.c
+    ${MODULES_DIR}/uart/uart.c
+    # ${MODULES_DIR}/nouveau_module/nouveau_module.c
 )
 
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
-    # Add user defined include paths
-    ${CMAKE_SOURCE_DIR}/../modules/max31865
+    ${MODULES_DIR}/max31865
+    ${MODULES_DIR}/uart
+    # ${MODULES_DIR}/nouveau_module
 )
+
+# printf/snprintf avec %f (newlib-nano)
 target_link_options(${CMAKE_PROJECT_NAME} PRIVATE -u _printf_float)
-
-target_sources(${CMAKE_PROJECT_NAME} PRIVATE
-    # Add user sources here
-    ${CMAKE_SOURCE_DIR}/../modules/uart/uart.c
-)
-
-target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
-    # Add user defined include paths
-    ${CMAKE_SOURCE_DIR}/../modules/uart
-)

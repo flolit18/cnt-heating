@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "max31865.h"
+#include "uart.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -51,8 +52,8 @@ UART_HandleTypeDef huart2;
 /* USER CODE BEGIN PV */
 static const max31865_t probes[2] = {
   /*      hspi              port              pin                 3 wires         R_ref  */
-  { &hspi2, GPIOA, GPIO_PIN_4, true, 416.0f },   // CS2
-  { &hspi2, GPIOA, GPIO_PIN_1, true, 428.0f },   // CS1
+  { &hspi2, GPIOA, GPIO_PIN_4, true, 416.0f },   // CS2 T1
+  { &hspi2, GPIOA, GPIO_PIN_1, true, 428.0f },   // CS1 T2
 };
 
 /* USER CODE END PV */
@@ -68,22 +69,7 @@ static void MX_USART2_UART_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-/* UART block */
-void print_uart(const char *msg){
-  HAL_UART_Transmit(&huart2, (uint8_t *) msg, strlen(msg), HAL_MAX_DELAY);
-}
 
-void print_rtd(uint16_t rtd){
-  char msg[32];
-  snprintf(msg, sizeof(msg), "%u\r\n", rtd);
-  print_uart(msg);
-}
-
-void print_Temp(float Temp){
-  char msg[32];
-  snprintf(msg, sizeof(msg), "%.2f °C\r\n", Temp);
-  print_uart(msg);
-}
 /* USER CODE END 0 */
 
 /**
@@ -118,17 +104,17 @@ int main(void)
   MX_SPI2_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-  for (int i = 0; i < 2; i++) {
+  // initialization of the 2 probes
+  for (int i = 0; i < 2; i++){
     char msg[48];
     bool ok = max31865_init(&probes[i]);
     uint8_t cfg = max31865_read_config(&probes[i]);
 
     snprintf(msg, sizeof(msg), "# probe %d init : %s (config = 0x%02X)\r\n",
              i + 1, ok ? "ok" : "failed", cfg);
-    print_uart(msg);
+    print_uart(&huart2, msg);
   }
   HAL_Delay(100);
-
   /* USER CODE END 2 */
 
   /* Initialize leds */
@@ -143,23 +129,22 @@ int main(void)
   {
 
     /* USER CODE END WHILE */
-
     /* USER CODE BEGIN 3 */
     char msg[48];
-
     for (int i = 0; i < 2; i++) {
       uint16_t raw;
-      if (max31865_read_raw(&probes[i], &raw)) {
+      if (max31865_read_raw(&probes[i], &raw)){
         float t = max31865_convert_celcius(raw, probes[i].r_ref);
-        snprintf(msg, sizeof(msg), "T%d=%.2f  ", i + 1, t);
-      } else {
+        snprintf(msg, sizeof(msg), "T%d=%.2f (R = %u) ", i + 1, t, (unsigned)raw);
+        print_uint(&huart2, raw);
+      }else{
         snprintf(msg, sizeof(msg), "T%d=DEFAUT  ", i + 1);
       }
-      print_uart(msg);
+      print_uart(&huart2, msg);
     }
-    print_uart("\r\n");
+    print_uart(&huart2, "\r\n");
 
-    HAL_Delay(25);
+    HAL_Delay(100);
   }
   /* USER CODE END 3 */
 }
